@@ -10,31 +10,72 @@ public class Solution {
     public ListNode subtract(ListNode A) {
         ListNode curNode = A;
         ListNode tempNode = A;
-        int tempCount = 1;
+        ListNode secondHalfHead;
+        int firstHalfSize = 1;
         int listSize = 1;
-        int halfSize = 0;
+        boolean isOdd = false;
         
-        while (curNode.next != null) { // iterate to last node
-            curNode = curNode.next;
+        while (curNode.next != null) {
             listSize++;
+            curNode = curNode.next;
         }
         
-        halfSize = listSize/2;
+        if (listSize == 1) {
+            return A;
+        }
+        
         curNode = A;
         
-        for (int i = 0; i < halfSize; i++) { // for each node in the first half
-            while (tempCount != listSize) { // iterate to second half of nodes
-                tempNode = tempNode.next;
-                tempCount++;
-            }
-            
-            listSize--;
-            curNode.val = tempNode.val - curNode.val;
+        while (tempNode.next != null && tempNode.next.next != null) { // iterate to middle of linked list
+            tempNode = tempNode.next.next;
             curNode = curNode.next;
-            tempCount = 1;
-            tempNode = A;
+            firstHalfSize++;
         }
+   
+        tempNode = A;
+        curNode = curNode.next;
+        curNode = reverseList(curNode); // reverse second half of list
+        secondHalfHead = curNode; // save head of second half of list
+        
+        if (listSize % 2 != 0) { // if list is odd-sized, round down
+            firstHalfSize--;
+            isOdd = true;
+        }
+        
+        for (int i = 0; i < firstHalfSize; i++) {
+            tempNode.val = curNode.val - tempNode.val;
+            
+            if (i != firstHalfSize - 1) {
+                tempNode = tempNode.next;
+            }
+            curNode = curNode.next;
+        }
+        
+        if (isOdd) { // skip middle element for odd cases
+            tempNode = tempNode.next;
+        }
+        
+        curNode = reverseList(secondHalfHead);
+        tempNode.next = curNode;
+        
+        return A;
+    }
+    
+    public ListNode reverseList(ListNode A) {
+        ListNode curNode = A;
+        ListNode prevNode = null;
+        ListNode nextNode = null;
+        
+        while (curNode != null) {
+            nextNode = curNode.next;
+            curNode.next = prevNode;
+            prevNode = curNode;
+            curNode = nextNode;
+        }
+
+        A = prevNode;
         
         return A;
     }
 }
+
